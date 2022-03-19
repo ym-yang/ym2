@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thesis.ym.mapper.SysAdminMapper">
+	<select id="getBooks" parameterType="books" resultType="books">
+		SELECT b.`id`,b.`bname`,b.`number`,b.`author`,b.`birth`,b.`edition`,s.`sname` FROM library.books b INNER JOIN library.sorts s ON b.`sid`=s.`id`
+		<where>
+			<if test="bname!=null and bname!=''">
+				and  b.`bname` like "%${bname}%"
+			</if>
+			<if test="sid!=null and sid!=''">
+				and b.`sid`=#{sid}
+			</if>
+		</where>
+		limit #{start}, 8
+	</select>
+	
+	<!--查总记录  -->
+	<select id="getCount" parameterType="books" resultType="int">
+		SELECT count(b.`id`) FROM library.books
+		b INNER JOIN library.sorts s ON b.`sid`=s.`id`
+		<where>
+			<if test="bname!=null and bname!=''">
+				and b.`bname` like "%${bname}%"
+			</if>
+			<if test="sid!=null and sid!=''">
+				and b.`sid`=#{sid}
+			</if>
+		</where>
+	</select>	
+	
+	<insert id="addBooks" parameterType="books" >
+		INSERT INTO library.books
+            (
+             `bname`,
+             `sid`,
+             `number`,
+             `author`,
+             `birth`,
+             `edition`)
+VALUES (
+        #{bname},
+       #{sid} ,
+        #{number},
+        #{author},
+        #{birth},
+        #{edition})
+	</insert>
+	
+	<select id="getBookById" parameterType="int" resultType="books">
+		SELECT b.`sid`,b.`id`,b.`bname`,b.`number`,b.`author`,b.`birth`,b.`edition`,s.`sname` FROM library.books b INNER JOIN library.sorts s ON b.`sid`=s.`id`
+		where b.`id`=#{id}
+	</select>
+	
+	<update id="updateBooks" parameterType="books">
+		UPDATE library.books
+SET 
+  `bname` = #{bname},
+  `sid` = #{sid},
+  `number` = #{number},
+  `author` = #{author},
+  `birth` = #{birth},
+  `edition` =#{edition}
+WHERE `id` = #{id}
+	</update>
+	
+	<delete id="deleteBooks">
+		DELETE
+FROM library.books
+WHERE `id` = #{id}
+	</delete>
+	
+	<!-- 下面是用户SQL -->
+	<select id="getUsers" parameterType="users" resultType="users">
+		SELECT
+  *
+FROM library.users
+		<where>
+			<if test="uname!=null and uname!=''">
+				and uname like "%${uname}%"
+			</if>
+		</where>
+	</select>
+	
+	<insert id="addUsers" parameterType="users">
+		INSERT INTO library.users
+            (
+             `uname`,
+             `code`,
+             `password`)
+VALUES (
+        #{uname},
+        #{code},
+        #{password})
+	</insert>
+	
+	<select id="getUserById" parameterType="int" resultType="users">
+				SELECT
+  *
+FROM library.users where id=#{id}
+	</select>
+	
+	<update id="updateUser" parameterType="users">
+		UPDATE library.users
+SET
+  `uname` = #{uname},
+  `code` = #{code},
+  `password` = #{password}
+WHERE `id` = #{id};
+	</update>
+	
+	<delete id="deleteUser" parameterType="int">
+		delete
+from library.users
+where `id` = #{id};
+	</delete>
+	
+	<select id="getSysAdmin" parameterType="users" resultType="sysAdmin">
+				SELECT
+  `id`,
+  `uname`,
+  `code`,
+  `password`
+FROM library.sysadmin WHERE   `code`=#{code} AND   `password`=#{password}
+	</select>
+	
+	<select id="selectUsers" parameterType="string" resultType="int">
+		SELECT
+   COUNT(`id`)
+FROM library.users WHERE `code`=#{code}
+		
+	</select>
+</mapper>
